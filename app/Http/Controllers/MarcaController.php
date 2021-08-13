@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 
 class MarcaController extends Controller
 {
+    //Construtor injetando instância do Model (type hinting)
     public function __construct(Marca $marca)
     {
         $this->marca = $marca;
@@ -65,7 +66,7 @@ class MarcaController extends Controller
     {
        /* return 'Chegamos até aqui (Update)'; */
        /* print_r($request->all()); */ //Os dados atualizados do "body" da requisição, deste id.
-      /*  echo '<hr>'; */
+       /* echo '<hr>'; */
        /* print_r($marca->getAttributes()); */ //Os dados antigos do objeto instanciado, deste id.
        $marca->update($request->all());
        return $marca;
