@@ -7,13 +7,9 @@ use Illuminate\Http\Request;
 
 class MarcaController extends Controller
 {
-<<<<<<< HEAD
     //Uma outra forma de lidar com a manipulação dos models dentro dos controllers
     //Construtor injetando uma instância do model(um objeto) nesse controller
     //"Type Hinting"(com parâmetro "tipado")
-=======
-    //Construtor injetando instância do Model (type hinting)
->>>>>>> 4afa4b846aa5a2bffdad9839fb2de0867c31e2ed
     public function __construct(Marca $marca)
     {
         $this->marca = $marca;
@@ -46,6 +42,25 @@ class MarcaController extends Controller
         /* Na verdade, "$request->all()" é(retorna)um array associativo */
         /* Assim usando o método estático create() */
         /* $marca = Marca::create($request->all()); */
+
+        //nome
+        //imagem
+        $regras = [
+            'nome' => 'required|unique:marcas',
+            'imagem' => 'required'
+        ];
+
+        $feedback = [
+            'required' => 'O campo :attribute é obrigatório',
+            'nome.unique' => 'O nome da marca já existe'
+        ];
+
+        /* Conceito do "Accept": Uma requisição enviada no cabeçalho de uma requisição feita
+           pela client(Em uma api webService rest feita em láravel), mudando o comportamento
+           padrão em função da forma como o "validade()" trabalha(no "Headers" da requisição,
+           mudando o retôrno para "application/json")  */
+        $request->validate($regras, $feedback);
+
         /* Agora acessando o método de "um objeto" */
         $marca = $this->marca->create($request->all());
         /* dd($marca); */
@@ -87,7 +102,6 @@ class MarcaController extends Controller
     /* public function update(Request $request, Marca $marca) */
     public function update(Request $request, $id)
     {
-<<<<<<< HEAD
         /* print_r($request->all()); */ //Os dados "atualizados" do "body" da requisição, deste id.
         /* print_r($marca->getAttributes()); */ //Os dados "antigos" do objeto instanciado, deste id.
         /* Acessando o método de "um objeto" */
@@ -100,14 +114,6 @@ class MarcaController extends Controller
         }
         $marca->update($request->all());
         return response()->json($marca, 200);
-=======
-       /* return 'Chegamos até aqui (Update)'; */
-       /* print_r($request->all()); */ //Os dados atualizados do "body" da requisição, deste id.
-       /* echo '<hr>'; */
-       /* print_r($marca->getAttributes()); */ //Os dados antigos do objeto instanciado, deste id.
-       $marca->update($request->all());
-       return $marca;
->>>>>>> 4afa4b846aa5a2bffdad9839fb2de0867c31e2ed
     }
 
     /**
