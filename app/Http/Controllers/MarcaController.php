@@ -45,21 +45,12 @@ class MarcaController extends Controller
 
         //nome
         //imagem
-        $regras = [
-            'nome' => 'required|unique:marcas',
-            'imagem' => 'required'
-        ];
-
-        $feedback = [
-            'required' => 'O campo :attribute é obrigatório',
-            'nome.unique' => 'O nome da marca já existe'
-        ];
 
         /* Conceito do "Accept": Uma requisição enviada no cabeçalho de uma requisição feita
            pela client(Em uma api webService rest feita em láravel), mudando o comportamento
            padrão em função da forma como o "validade()" trabalha(no "Headers" da requisição,
            mudando o retôrno para "application/json")  */
-        $request->validate($regras, $feedback);
+        $request->validate($this->marca->rules(), $this->marca->feedback());
 
         /* Agora acessando o método de "um objeto" */
         $marca = $this->marca->create($request->all());
@@ -112,6 +103,10 @@ class MarcaController extends Controller
                status code http, que será dada pelo laravel. Como 2º parâmetro, o código http */
             return response()->json(['êrro' => 'O recurso a ser atualizado não existe!'], 404);
         }
+
+        //Validação: Função "validate()". Como parâmetros os métodos "rules()" e
+        //"feedback()" do Model Marca.php, para validar as regras no update.
+        $request->validate($marca->rules(), $marca->feedback());
         $marca->update($request->all());
         return response()->json($marca, 200);
     }
