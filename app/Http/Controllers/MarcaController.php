@@ -86,7 +86,7 @@ class MarcaController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \Illuminate\Http\Request $request
      * @param  Integer
      * @return \Illuminate\Http\Response
      */
@@ -104,9 +104,30 @@ class MarcaController extends Controller
             return response()->json(['êrro' => 'O recurso a ser atualizado não existe!'], 404);
         }
 
-        //Validação: Função "validate()". Como parâmetros os métodos "rules()" e
-        //"feedback()" do Model Marca.php, para validar as regras no update.
-        $request->validate($marca->rules(), $marca->feedback());
+        if ($request->method() === 'PATCH') {
+            $regrasDinamicas = array();
+            //Percorrendo todas as regras definidas no Model
+            foreach ($marca->rules() as $input => $regra) {
+                /* $teste .= 'Input: ' . $input . ' | Regra: ' . $regra . '<br>'; */
+
+                //Coletar apenas as regras aplicáveis aos parâmetros parciais da requisição PATCH.
+                //"array_key_exists()": Método nativo do php para pesquisar arrays. Pesquisando
+                //input(1º parâmetro)no request->all(2º parâmetro), que é um array com os parâmetros
+                //enviados na requisição "$request".
+                if (array_key_exists($input, $request->all())) {
+                    $regrasDinamicas[$input] = $regra;
+                }
+            }
+
+            //Validação: Função "validate()". Como parâmetros os métodos "rules()" e
+            //"feedback()" do Model Marca.php, para validar as regras no update.
+            $request->validate($regrasDinamicas, $marca->feedback());
+        } else {
+            //Validação: Função "validate()". Como parâmetros os métodos "rules()" e
+            //"feedback()" do Model Marca.php, para validar as regras no update.
+            $request->validate($marca->rules(), $marca->feedback());
+        }
+
         $marca->update($request->all());
         return response()->json($marca, 200);
     }
@@ -131,6 +152,7 @@ class MarcaController extends Controller
         }
         /* Executando o método "delete()": */
         $marca->delete();
-        return response()->json(['msg' => 'A marca foi removida com sucesso'], 200) ; //Retornando um array associativo.
+        //Retornando um array associativo.
+        return response()->json(['msg' => 'A marca foi removida com sucesso'], 200);
     }
 }
