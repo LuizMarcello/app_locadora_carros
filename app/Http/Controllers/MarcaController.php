@@ -50,10 +50,18 @@ class MarcaController extends Controller
            pela client(Em uma api webService rest feita em láravel), mudando o comportamento
            padrão em função da forma como o "validade()" trabalha(no "Headers" da requisição,
            mudando o retôrno para "application/json")  */
-        $request->validate($this->marca->rules(), $this->marca->feedback());
+        //$request->validate($this->marca->rules(), $this->marca->feedback());
+
+        //dd($request->nome); //Acessando o atributo 'nome'
+        //dd($request->get('nome')); //Acessando o atributo/input 'nome', usando o 'get()'.
+        //dd($request->input('nome')); //Acessando o atributo/input 'nome', usando o método 'input()'.
+
+        //dd($request->imagem); //Acessando o atributo/input 'imagem'
+        dd($request->file('imagem')); //Acessando o atributo/input 'imagem',
+                                      //ou array de imagens, usando o método 'file()'.
 
         /* Agora acessando o método de "um objeto" */
-        $marca = $this->marca->create($request->all());
+        //$marca = $this->marca->create($request->all());
         /* dd($marca); */
         /* dd($request->all()); */
         /* return 'Chegamos até aqui (Store)'; */
