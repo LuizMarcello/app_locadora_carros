@@ -57,8 +57,10 @@ class MarcaController extends Controller
         //dd($request->input('nome')); //Acessando o atributo/input 'nome', usando o método 'input()'.
 
         //dd($request->imagem); //Acessando o atributo/input 'imagem'
-        dd($request->file('imagem')); //Acessando o atributo/input 'imagem',
-                                      //ou array de imagens, usando o método 'file()'.
+        $image = $request->file('imagem'); //Acessando o atributo/input 'imagem',
+                                           //ou array de imagens, usando o método 'file()'.
+        $image->store('imagens', 'public');
+        dd('Upload de arquivos');
 
         /* Agora acessando o método de "um objeto" */
         //$marca = $this->marca->create($request->all());
