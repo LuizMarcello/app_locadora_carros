@@ -1,5 +1,8 @@
 <?php
 
+/* php artisan storage:link - Cria um link simbólico entre:
+   storage/app/public/imagens e public/storage/imagens  */
+
 namespace App\Http\Controllers;
 
 use App\Models\Marca;
@@ -50,20 +53,33 @@ class MarcaController extends Controller
            pela client(Em uma api webService rest feita em láravel), mudando o comportamento
            padrão em função da forma como o "validade()" trabalha(no "Headers" da requisição,
            mudando o retôrno para "application/json")  */
-        //$request->validate($this->marca->rules(), $this->marca->feedback());
+        $request->validate($this->marca->rules(), $this->marca->feedback());
 
-        //dd($request->nome); //Acessando o atributo 'nome'
+
+        //dd($request->nome); //Acessando o atributo/input 'nome'.
         //dd($request->get('nome')); //Acessando o atributo/input 'nome', usando o 'get()'.
         //dd($request->input('nome')); //Acessando o atributo/input 'nome', usando o método 'input()'.
 
         //dd($request->imagem); //Acessando o atributo/input 'imagem'
-        $image = $request->file('imagem'); //Acessando o atributo/input 'imagem',
-                                           //ou array de imagens, usando o método 'file()'.
-        $image->store('imagens', 'public');
-        dd('Upload de arquivos');
+        $imagem = $request->file('imagem'); //Acessando o atributo/input 'imagem',
+        //ou array de imagens, usando o método 'file()'.
+
+        //Variável receberá o retôrno do método "store()", que serão o nome,
+        //a extensão e o path os quais esta imagem foi armazenada.
+        $imagem_urn = $imagem->store('imagens', 'public');
 
         /* Agora acessando o método de "um objeto" */
-        //$marca = $this->marca->create($request->all());
+        //Persistindo no banco
+        //1ª síntaxe:
+        $marca = $this->marca->create([
+            'nome' => $request->nome,
+            'imagem' => $imagem_urn
+        ]);
+        //ou assim (2ª síntaxe):
+        //$marca->nome = $request->nome;
+        //$marca->imagem = $imagem_urn;
+        //$marca->save();
+
         /* dd($marca); */
         /* dd($request->all()); */
         /* return 'Chegamos até aqui (Store)'; */
@@ -106,7 +122,11 @@ class MarcaController extends Controller
         /* print_r($request->all()); */ //Os dados "atualizados" do "body" da requisição, deste id.
         /* print_r($marca->getAttributes()); */ //Os dados "antigos" do objeto instanciado, deste id.
         /* Acessando o método de "um objeto" */
+        /* Os verbos PATH E PUT, quando usados em conjunto com o "form-data", não são
+           reconhecidos pelo láravel(uma limitação).Então acrescentar no Body:
+           key:_method e value:put(ou path). */
         $marca = $this->marca->find($id);
+        
         /* Validando: */
         if ($marca === null) {  /* operador idêntico "===": mesmo tipo e valor */
             /* Usando o helper "response()", para modificar os detalhes da resposta do
@@ -137,10 +157,24 @@ class MarcaController extends Controller
             //"feedback()" do Model Marca.php, para validar as regras no update.
             $request->validate($marca->rules(), $marca->feedback());
         }
+        //Acessando o atributo/input 'imagem'
+        //ou array de imagens, usando o método 'file()'.
+        //Recuperando o objeto "imagem"
+        $imagem = $request->file('imagem');
 
-        $marca->update($request->all());
+        //Variável receberá o retôrno do método "store()", que serão o nome,
+        //a extensão e o path, os quais esta imagem foi armazenada.
+        $imagem_urn = $imagem->store('imagens', 'public');
+
+        //Agora acessando o método de um objeto
+        //e atualizando no banco
+        $marca->update([
+            'nome' => $request->nome,
+            'imagem' => $imagem_urn
+        ]);
         return response()->json($marca, 200);
     }
+
 
     /**
      * Remove the specified resource from storage.
