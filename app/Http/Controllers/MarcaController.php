@@ -5,6 +5,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\Storage;
 use App\Models\Marca;
 use Illuminate\Http\Request;
 
@@ -126,7 +127,7 @@ class MarcaController extends Controller
            reconhecidos pelo láravel(uma limitação).Então acrescentar no Body:
            key:_method e value:put(ou path). */
         $marca = $this->marca->find($id);
-        
+
         /* Validando: */
         if ($marca === null) {  /* operador idêntico "===": mesmo tipo e valor */
             /* Usando o helper "response()", para modificar os detalhes da resposta do
@@ -157,6 +158,13 @@ class MarcaController extends Controller
             //"feedback()" do Model Marca.php, para validar as regras no update.
             $request->validate($marca->rules(), $marca->feedback());
         }
+
+        //Remove o arquivo antigo, caso um novo arquivo tenha sido enviado no request.
+        if ($request->file('imagem')) {
+            //"Storage" importado acima com "use"(Facades).
+            Storage::disk('public')->delete($marca->imagem);
+        }
+
         //Acessando o atributo/input 'imagem'
         //ou array de imagens, usando o método 'file()'.
         //Recuperando o objeto "imagem"
@@ -194,7 +202,12 @@ class MarcaController extends Controller
                status code http, que será dada pelo laravel. Como 2º parâmetro, o código http */
             return response()->json(['êrro' => 'O recurso a ser excluido não existe!'], 404);
         }
+        //Usando o "façade Storage" importado acima com "use"(Facades).
+        //Remove o arquivo de "imagem" antigo (coluna "imagem") do id.
+        Storage::disk('public')->delete($marca->imagem);
+
         /* Executando o método "delete()": */
+        //Deleta todo o registro referente ao id
         $marca->delete();
         //Retornando um array associativo.
         return response()->json(['msg' => 'A marca foi removida com sucesso'], 200);
