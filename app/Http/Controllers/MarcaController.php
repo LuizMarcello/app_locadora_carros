@@ -18,6 +18,7 @@ class MarcaController extends Controller
     {
         $this->marca = $marca;
     }
+    
     /**
      * Display a listing of the resource.
      *
