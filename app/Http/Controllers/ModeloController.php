@@ -29,7 +29,11 @@ class ModeloController extends Controller
         /* Assim usando o método estático all() */
         /* $modelo = Modelo::all(); */
         /* Agora acessando o método de "um objeto" */
-        $modelo = $this->modelo->all();
+        /* with():Adicionando o relacionamento deste modelo com MARCA */
+        $modelo = $this->modelo->with('marca')->get();
+        //Com o método all(): Criando um obj de consulta + get() = collection
+        //Com o método get(): Modificar a consulta -> collection
+
         /* Usando o helper "response()", para modificar os detalhes da resposta do
             status code http, que será dada pelo laravel. Como 2º parâmetro, o código http */
         return response()->json($modelo, 200);
@@ -114,7 +118,8 @@ class ModeloController extends Controller
     public function show($id)
     {
         /* Acessando o método de "um objeto" */
-        $modelo = $this->modelo->find($id);
+        /* with():Adicionando o relacionamento deste modelo com MARCA */
+        $modelo = $this->modelo->with('marca')->find($id);
         /* Validando: */
         if ($modelo === null) {  /* operador idêntico "===": mesmo tipo e valor */
             /* return ['êrro' => 'O recurso pesquisado não existe!']; */

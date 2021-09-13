@@ -18,7 +18,7 @@ class MarcaController extends Controller
     {
         $this->marca = $marca;
     }
-    
+
     /**
      * Display a listing of the resource.
      *
@@ -29,7 +29,11 @@ class MarcaController extends Controller
         /* Assim usando o método estático all() */
         /* $marcas = Marca::all(); */
         /* Agora acessando o método de "um objeto" */
-        $marca = $this->marca->all();
+         /* with():Adicionando o relacionamento deste modelo com MODELO */
+        $marca = $this->marca->with('modelos')->get();
+         //Com o método all(): Criando um obj de consulta + get() = collection
+        //Com o método get(): Modificar a consulta -> collection
+        
         /* Usando o helper "response()", para modificar os detalhes da resposta do
             status code http, que será dada pelo laravel. Como 2º parâmetro, o código http */
         return response()->json($marca, 200);
@@ -100,7 +104,8 @@ class MarcaController extends Controller
     public function show($id)
     {
         /* Acessando o método de "um objeto" */
-        $marca = $this->marca->find($id);
+        /* with():Adicionando o relacionamento deste modelo com MODELO */
+        $marca = $this->marca->with('modelos')->find($id);
         /* Validando: */
         if ($marca === null) {  /* operador idêntico "===": mesmo tipo e valor */
             /* return ['êrro' => 'O recurso pesquisado não existe!']; */

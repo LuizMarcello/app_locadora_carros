@@ -36,4 +36,12 @@ class Marca extends Model
             'nome.min' => 'O nome deve ter no mínimo 3 caracteres'
         ];
     }
+
+    //Relacionamento de MARCA com MODELO
+    //No plural, porque uma MARCA pode ter vários MODELOS
+    public function modelos(){
+        //Uma MARCA possui muitos MODELOS
+        //Então retorna um array.
+        return $this->hasMany('App\Models\Modelo');
+    }
 }

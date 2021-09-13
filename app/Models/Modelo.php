@@ -31,4 +31,11 @@ class Modelo extends Model
          *
          */
     }
+
+    //Relacionamento de MODELO com MARCA:
+    //No singular, porque os MODELOS podem ter uma só MARCA
+    public function marca(){
+        //Um MODELO pertence a uma MARCA
+        return $this->belongsTo('App\Models\Marca');
+    }
 }
