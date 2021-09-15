@@ -29,11 +29,11 @@ class MarcaController extends Controller
         /* Assim usando o método estático all() */
         /* $marcas = Marca::all(); */
         /* Agora acessando o método de "um objeto" */
-         /* with():Adicionando o relacionamento deste modelo com MODELO */
+        /* with():Adicionando o relacionamento deste modelo com MODELO */
         $marca = $this->marca->with('modelos')->get();
-         //Com o método all(): Criando um obj de consulta + get() = collection
+        //Com o método all(): Criando um obj de consulta + get() = collection
         //Com o método get(): Modificar a consulta -> collection
-        
+
         /* Usando o helper "response()", para modificar os detalhes da resposta do
             status code http, que será dada pelo laravel. Como 2º parâmetro, o código http */
         return response()->json($marca, 200);
@@ -182,10 +182,18 @@ class MarcaController extends Controller
 
         //Agora acessando o método de um objeto
         //e atualizando no banco
-        $marca->update([
+        //Preencher o objeto "$marca" com todos os dados recebidos do request.
+        //O método "fill()"(preencher) espera um array.
+        $marca->fill($request->all());
+       
+        $marca->imagem = $imagem_urn;
+        //dd($marca->getAttributes());
+        /* $marca->update([
             'nome' => $request->nome,
             'imagem' => $imagem_urn
-        ]);
+        ]); */
+        $marca->save();
+
         return response()->json($marca, 200);
     }
 

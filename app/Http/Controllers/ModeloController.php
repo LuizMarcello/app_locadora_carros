@@ -204,9 +204,16 @@ class ModeloController extends Controller
         //a extensão e o path, os quais esta imagem foi armazenada.
         $imagem_urn = $imagem->store('imagens/modelos', 'public');
 
+        //Usando o método fill() para sobrepôr os valores deste objeto
+        //com base no $request->all() (array de parâmetros).
+        $modelo->fill($request->all());
+        
+        $modelo->imagem = $imagem_urn;
+        $modelo->save();
+
         //Agora acessando o método de um objeto
         //e atualizando no banco
-        $modelo->update([
+        /* $modelo->update([
             'marca_id' => $request->marca_id,
             'nome' => $request->nome,
             'imagem' => $imagem_urn,
@@ -215,7 +222,7 @@ class ModeloController extends Controller
             'air_bag' => $request->air_bag,
             'abs' => $request->abs
 
-        ]);
+        ]); */
         return response()->json($modelo, 200);
     }
 
