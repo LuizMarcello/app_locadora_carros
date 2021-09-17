@@ -24,19 +24,36 @@ class ModeloController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
+        $modelos = array();
+
+        //Se na url, for encaminhado o parâmetro "atributos":
+        if ($request->has('atributos')) {
+            $atributos = $request->atributos;
+            $modelos = $this->modelo->selectRaw($atributos)->with('marca')->get();
+
+            //dd($request->atributos);
+            //"id,nome,imagem"
+        } else {
+            //Sem o parâmetro "atributos" na url
+            /* with():Adicionando o relacionamento deste modelo com MARCA */
+            $modelos = $this->modelo->with('marca')->get();
+        }
+
         /* Assim usando o método estático all() */
         /* $modelo = Modelo::all(); */
         /* Agora acessando o método de "um objeto" */
         /* with():Adicionando o relacionamento deste modelo com MARCA */
-        $modelo = $this->modelo->with('marca')->get();
+
         //Com o método all(): Criando um obj de consulta + get() = collection
         //Com o método get(): Modificar a consulta -> collection
 
         /* Usando o helper "response()", para modificar os detalhes da resposta do
             status code http, que será dada pelo laravel. Como 2º parâmetro, o código http */
-        return response()->json($modelo, 200);
+
+        //$this->modelo->with('marca')->get()
+        return response()->json($modelos, 200);
     }
 
     /**
@@ -207,7 +224,7 @@ class ModeloController extends Controller
         //Usando o método fill() para sobrepôr os valores deste objeto
         //com base no $request->all() (array de parâmetros).
         $modelo->fill($request->all());
-        
+
         $modelo->imagem = $imagem_urn;
         $modelo->save();
 
