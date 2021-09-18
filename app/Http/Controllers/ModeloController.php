@@ -28,17 +28,31 @@ class ModeloController extends Controller
     {
         $modelos = array();
 
+        //Verificando na url a existência deste outro atributo, de "marca".
+        //Recuperando também as colunas "nome" e "imagem" do model
+        //'marca', conforme solicitado também na url
+        //Ficou assim a url no postman:
+        //localhost:8000/api/modelo/?atributos=id,nome,lugares,marca_id&atributos_marca=nome,imagem
+        //Tem relacionamentop com este model.
+        if ($request->has('atributos_marca')) {
+            $atributos_marca = $request->atributos_marca;
+            /* with():Adicionando o relacionamento deste modelo com MARCA */
+            $modelos = $this->modelo->with('marca:id,' . $atributos_marca);
+        } else {
+            $modelos = $this->nodelo->with('marca');
+        }
+
+        //Assim, a url trás todos as colunas de "modelo", mas apenas a coluna
+        //"imagem" do model relacionado "marca".
+        //localhost:8000/api/modelo?atributos_marca=imagem
+
         //Se na url, for encaminhado o parâmetro "atributos":
         if ($request->has('atributos')) {
             $atributos = $request->atributos;
-            $modelos = $this->modelo->selectRaw($atributos)->with('marca')->get();
-
-            //dd($request->atributos);
-            //"id,nome,imagem"
+            $modelos = $modelos->selectRaw($atributos)->get();
         } else {
             //Sem o parâmetro "atributos" na url
-            /* with():Adicionando o relacionamento deste modelo com MARCA */
-            $modelos = $this->modelo->with('marca')->get();
+            $modelos = $modelos->get();
         }
 
         /* Assim usando o método estático all() */
