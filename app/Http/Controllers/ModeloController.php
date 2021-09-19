@@ -39,13 +39,18 @@ class ModeloController extends Controller
             /* with():Adicionando o relacionamento deste modelo com MARCA */
             $modelos = $this->modelo->with('marca:id,' . $atributos_marca);
         } else {
-            $modelos = $this->nodelo->with('marca');
+            $modelos = $this->modelo->with('marca');
         }
 
         //Verificando na url a existência deste outro atributo "filtro".
-        if($request->has('filtro')){
-            $condicoes = explode(':', $request->filtro);
-            $modelos = $modelos->where( $condicoes[0], $condicoes[1], $condicoes[2]);
+        if ($request->has('filtro')) {
+
+            $filtros = explode(';', $request->filtro);
+            foreach ($filtros as $key => $condicao) {
+
+                $c = explode(':', $condicao);
+                $modelos = $modelos->where($c[0], $c[1], $c[2]);
+            }
         }
 
         //Assim, a url trás todos as colunas de "modelo", mas apenas a coluna
