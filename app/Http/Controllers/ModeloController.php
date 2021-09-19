@@ -28,7 +28,7 @@ class ModeloController extends Controller
     {
         $modelos = array();
 
-        //Verificando na url a existência deste outro atributo, de "marca".
+        //Verificando na url a existência de "atributos_marca".
         //Recuperando também as colunas "nome" e "imagem" do model
         //'marca', conforme solicitado também na url
         //Ficou assim a url no postman:
@@ -40,6 +40,12 @@ class ModeloController extends Controller
             $modelos = $this->modelo->with('marca:id,' . $atributos_marca);
         } else {
             $modelos = $this->nodelo->with('marca');
+        }
+
+        //Verificando na url a existência deste outro atributo "filtro".
+        if($request->has('filtro')){
+            $condicoes = explode(':', $request->filtro);
+            $modelos = $modelos->where( $condicoes[0], $condicoes[1], $condicoes[2]);
         }
 
         //Assim, a url trás todos as colunas de "modelo", mas apenas a coluna
