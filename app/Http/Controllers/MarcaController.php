@@ -24,19 +24,60 @@ class MarcaController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
+        $marcas = array();
+
+        //Verificando na url a existência de "atributos_modelos".
+        //Recuperando também as colunas "nome" e "imagem" do model
+        //'modelo', conforme solicitado também na url
+        //Ficou assim a url no postman:
+        //localhost:8000/api/modelo/?atributos=id,nome,lugares,marca_id&atributos_marca=nome,imagem
+        //Tem relacionamentop com este model.
+        if ($request->has('atributos_modelos')) {
+            $atributos_modelos = $request->atributos_modelos;
+            /* with():Adicionando o relacionamento deste model com MODELO */
+            $marcas = $this->marca->with('modelos:id,' . $atributos_modelos);
+        } else {
+            $marcas = $this->marca->with('modelos');
+        }
+
+        //Verificando na url a existência deste outro atributo "filtro".
+        if ($request->has('filtro')) {
+
+            $filtros = explode(';', $request->filtro);
+            foreach ($filtros as $key => $condicao) {
+
+                $c = explode(':', $condicao);
+                $marcas = $marcas->where($c[0], $c[1], $c[2]);
+            }
+        }
+
+        //Assim, a url trás todos as colunas de "modelo", mas apenas a coluna
+        //"imagem" do model relacionado "marca".
+        //localhost:8000/api/modelo?atributos_marca=imagem
+
+        //Se na url, for encaminhado o parâmetro "atributos":
+        if ($request->has('atributos')) {
+            $atributos = $request->atributos;
+            $marcas = $marcas->selectRaw($atributos)->get();
+        } else {
+            //Sem o parâmetro "atributos" na url
+            $marcas = $marcas->get();
+        }
+
+
         /* Assim usando o método estático all() */
         /* $marcas = Marca::all(); */
         /* Agora acessando o método de "um objeto" */
         /* with():Adicionando o relacionamento deste modelo com MODELO */
-        $marca = $this->marca->with('modelos')->get();
+        //$marca = $this->marca->with('modelos')->get();
         //Com o método all(): Criando um obj de consulta + get() = collection
         //Com o método get(): Modificar a consulta -> collection
 
         /* Usando o helper "response()", para modificar os detalhes da resposta do
             status code http, que será dada pelo laravel. Como 2º parâmetro, o código http */
-        return response()->json($marca, 200);
+        return response()->json($marcas, 200);
     }
 
     /**
@@ -185,7 +226,7 @@ class MarcaController extends Controller
         //Preencher o objeto "$marca" com todos os dados recebidos do request.
         //O método "fill()"(preencher) espera um array.
         $marca->fill($request->all());
-       
+
         $marca->imagem = $imagem_urn;
         //dd($marca->getAttributes());
         /* $marca->update([
