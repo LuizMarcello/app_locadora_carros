@@ -7,6 +7,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\Storage;
 use App\Models\Modelo;
+use App\Repositories\ModeloRepository;
 use Illuminate\Http\Request;
 
 class ModeloController extends Controller
@@ -26,60 +27,27 @@ class ModeloController extends Controller
      */
     public function index(Request $request)
     {
-        $modelos = array();
+        $modeloRepository = new ModeloRepository($this->modelo);
 
-        //Verificando na url a existência de "atributos_marca".
-        //Recuperando também as colunas "nome" e "imagem" do model
-        //'marca', conforme solicitado também na url
-        //Ficou assim a url no postman:
-        //localhost:8000/api/modelo/?atributos=id,nome,lugares,marca_id&atributos_marca=nome,imagem
-        //Tem relacionamentop com este model.
         if ($request->has('atributos_marca')) {
-            $atributos_marca = $request->atributos_marca;
-            /* with():Adicionando o relacionamento deste modelo com MARCA */
-            $modelos = $this->modelo->with('marca:id,' . $atributos_marca);
+            $atributos_marca = 'marca:id,' . $request->atributos_marca;
+            $modeloRepository->selectAtributosRegistrosRelacionados($atributos_marca);
         } else {
-            $modelos = $this->modelo->with('marca');
+            $modeloRepository->selectAtributosRegistrosRelacionados('marca');
         }
 
-        //Verificando na url a existência deste outro atributo "filtro".
         if ($request->has('filtro')) {
-
-            $filtros = explode(';', $request->filtro);
-            foreach ($filtros as $key => $condicao) {
-
-                $c = explode(':', $condicao);
-                $modelos = $modelos->where($c[0], $c[1], $c[2]);
-            }
+            $modeloRepository->filtro($request->filtro);
         }
 
-        //Assim, a url trás todos as colunas de "modelo", mas apenas a coluna
-        //"imagem" do model relacionado "marca".
-        //localhost:8000/api/modelo?atributos_marca=imagem
-
-        //Se na url, for encaminhado o parâmetro "atributos":
         if ($request->has('atributos')) {
-            $atributos = $request->atributos;
-            $modelos = $modelos->selectRaw($atributos)->get();
-        } else {
-            //Sem o parâmetro "atributos" na url
-            $modelos = $modelos->get();
+            $modeloRepository->selectAtributos($request->atributos);
         }
 
-        /* Assim usando o método estático all() */
-        /* $modelo = Modelo::all(); */
-        /* Agora acessando o método de "um objeto" */
-        /* with():Adicionando o relacionamento deste modelo com MARCA */
-
-        //Com o método all(): Criando um obj de consulta + get() = collection
-        //Com o método get(): Modificar a consulta -> collection
-
-        /* Usando o helper "response()", para modificar os detalhes da resposta do
-            status code http, que será dada pelo laravel. Como 2º parâmetro, o código http */
-
-        //$this->modelo->with('marca')->get()
-        return response()->json($modelos, 200);
+        return response()->json($modeloRepository->getResultado(), 200);
     }
+
+
 
     /**
      * Show the form for creating a new resource.
