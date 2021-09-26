@@ -135,6 +135,17 @@ class MarcaController extends Controller
         return response()->json($marca,  200);
     }
 
+     /**
+     * Show the form for editing the specified resource.
+     *
+     * @param  \App\Models\Locacao  $locacao
+     * @return \Illuminate\Http\Response
+     */
+    public function edit(Marca $marca)
+    {
+        //
+    }
+
     /**
      * Update the specified resource in storage.
      *
