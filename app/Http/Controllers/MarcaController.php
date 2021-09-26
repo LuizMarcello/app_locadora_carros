@@ -47,7 +47,7 @@ class MarcaController extends Controller
         return response()->json($marcaRepository->getResultado(), 200);
     }
 
-    
+
 
     /**
      * Show the form for creating a new resource.
@@ -118,8 +118,7 @@ class MarcaController extends Controller
      * Display the specified resource.
      *
      * @param  Integer
-     * @return \Illuminate\Http\Response
-     */
+     * @return \Illuminate\Http\Response     */
     /* public function show(Marca $marca) */
     public function show($id)
     {
@@ -133,7 +132,7 @@ class MarcaController extends Controller
                status code http, que será dada pelo laravel. Como 2º parâmetro, o código http */
             return response()->json(['êrro' => 'O recurso pesquisado não existe!'], 404);
         }
-        return response()->json($marca, 200);
+        return response()->json($marca,  200);
     }
 
     /**
