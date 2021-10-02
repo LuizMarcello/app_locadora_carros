@@ -18,6 +18,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
+
 //Mapeamento automático da rota, para todos os métodos do controlador que foi criado
 //com "resource", que já cria todos os métodos padrão.
 //Usando "resource" criam as rotas para index, store, create, show, update, destroy e edit no controller.
@@ -30,3 +31,10 @@ Route::apiResource('carro', 'CarroController');
 Route::apiResource('locacao', 'LocacaoController');
 Route::apiResource('marca', 'MarcaController');
 Route::apiResource('modelo', 'ModeloController');
+
+Route::post('login', 'AuthController@login');
+Route::post('logout', 'AuthController@logout');
+Route::post('refresh', 'AuthController@refresh');
+Route::post('me', 'AuthController@me');
+
+
