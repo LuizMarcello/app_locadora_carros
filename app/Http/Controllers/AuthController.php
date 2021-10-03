@@ -36,13 +36,23 @@ class AuthController extends Controller
         return 'logout';
     }
 
+    //Renovando a atuorização(token JWT)
     public function refresh()
     {
-        return 'refresh';
+        //Para este método "refresh()" funcionar, é necessário que,
+        //em uma requisição pára esta rota "refresh", o cliente
+        //encaminhe um token jwt "válido". Só é possível renovar
+        //uma autorização de acesso, se o cliente solicitante tiver
+        //uma autorização ainda válida.
+        $token = auth('api')->refresh();
+        //Retornandp um array ("[]"), com o token já renovado.
+        return response()->json(['token' => $token]);
     }
 
     public function me()
     {
-        return 'me';
+        //Serão fornecidos os dados do usuário para o qual o tokem jwt
+        //foi liberado, que foi autenticado, e recebeu autorização.
+        return response()->json(auth()->user());
     }
 }

@@ -27,8 +27,11 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 //Usando "apiResource" só criam as rotas para index, store, show, update, e destroy no controller.
 //Para "api", as rotas para "create" e "edit" não tem necessidade(eles criam um formulários).
 //Grupo de rotas protegido com prefix de versionamento da api. Agora este prefix(versão da api)
-//terá que ser acrescentado nas urls.
+//também terá que ser acrescentado nas urls.
+//Grupo de rotas também utilizando o helper/middleware "jwt.auth" para autenticação.
 Route::prefix('v1')->middleware('jwt.auth')->group(function () {
+    Route::post('me', 'AuthController@me');
+    Route::post('refresh', 'AuthController@refresh');
     Route::apiResource('cliente', 'ClienteController');
     Route::apiResource('carro', 'CarroController');
     Route::apiResource('locacao', 'LocacaoController');
@@ -38,5 +41,3 @@ Route::prefix('v1')->middleware('jwt.auth')->group(function () {
 
 Route::post('login', 'AuthController@login');
 Route::post('logout', 'AuthController@logout');
-Route::post('refresh', 'AuthController@refresh');
-Route::post('me', 'AuthController@me');
