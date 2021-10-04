@@ -26,14 +26,18 @@ class AuthController extends Controller
             //401 = Unauthorized -> não autorizado
             //403 = forbidden -> proibido (login inválido)
         }
-
-
         return 'login';
     }
 
+
     public function logout()
     {
-        return 'logout';
+        //Para revogar uma autorização(um jwt token), é preciso ter
+        //uma autorização ainda válida, ou seja, encaminhar um token jwt válido.
+        //O tokem é colocado na "blacklist".
+        auth('api')->logout();
+        //Retorna um array
+        return response()->json(['msg' => 'Logout realizado com sucesso!']);
     }
 
     //Renovando a atuorização(token JWT)
@@ -43,7 +47,7 @@ class AuthController extends Controller
         //em uma requisição pára esta rota "refresh", o cliente
         //encaminhe um token jwt "válido". Só é possível renovar
         //uma autorização de acesso, se o cliente solicitante tiver
-        //uma autorização ainda válida.
+        //uma autorização ainda válida, ou seja, enviar um tokem jwt válido
         $token = auth('api')->refresh();
         //Retornandp um array ("[]"), com o token já renovado.
         return response()->json(['token' => $token]);
